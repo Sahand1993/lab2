@@ -1,0 +1,45 @@
+%% Part 2
+clc; close all; clear;
+
+% Generate data
+patterns_train = 0:0.1:2*pi;
+patterns_test = 0.05:0.1:2*pi+0.05;
+targets_train = sin(patterns_train);
+targets_test = sin(patterns_test);
+
+
+%Add Noise
+noiseVar = 0.1;
+noise = normrnd(0, sqrt(noiseVar), size(targets_train));
+targets_train=targets_train+noise;
+
+% Feedforward
+hiddenNodeOne = 2;
+hiddenNodeTwo = 2;
+hiddenSizes = [hiddenNodeOne hiddenNodeTwo];
+trainFcn = 'traingd';
+net = feedforwardnet(hiddenSizes,trainFcn);
+
+% Variables
+net.trainParam.show = 1;
+net.trainParam.lr = 0.001;
+net.trainParam.epochs = 2500;
+net.trainParam.goal = 0.001;
+net.performParam.regularization = 0.001;
+
+net.divideFcn ='divideind';
+x = size(patterns_train)(2)
+ix = randperm(x);
+%ix1 = ix(1:500);
+%ix2 = ix(501:1000);
+%ix3 = ix(1001:1200);
+net.divideParam.trainInd = ix;
+%net.divideParam.valInd = ix2;
+%net.divideParam.testInd = ix3;
+
+%net.divideind(1200,1:500,501:1000,1001:1200);
+%net.trainParam.showWindow = true;
+%net.permormFcn = 'mse';
+
+%pool = parpool;
+net = train(net, patterns_train, targets_train, 'useParallel','yes');
